@@ -4,8 +4,10 @@ title: About Me
 permalink: /about/
 ---
 
-This website is powered by **[fastpages](https://github.com/fastai/fastpages)** [^1].
+## About me
 
+빅데이터 응용학과 20202797 양정현
 
+## 관심분야
 
-[^1]:a blogging platform that natively supports Jupyter notebooks in addition to other formats.
+빅데이터
