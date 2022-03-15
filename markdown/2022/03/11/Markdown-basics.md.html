@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Markdown Cheat Sheet | JUNGHYUN YANG</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Markdown Cheat Sheet" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Markdown basics" />
+<meta property="og:description" content="Markdown basics" />
+<link rel="canonical" href="https://yangjunghyun.github.io/yangjunghyun_/markdown/2022/03/11/Markdown-basics.md.html" />
+<meta property="og:url" content="https://yangjunghyun.github.io/yangjunghyun_/markdown/2022/03/11/Markdown-basics.md.html" />
+<meta property="og:site_name" content="JUNGHYUN YANG" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-03-11T00:00:00-06:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Markdown Cheat Sheet" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-03-11T00:00:00-06:00","datePublished":"2022-03-11T00:00:00-06:00","description":"Markdown basics","headline":"Markdown Cheat Sheet","mainEntityOfPage":{"@type":"WebPage","@id":"https://yangjunghyun.github.io/yangjunghyun_/markdown/2022/03/11/Markdown-basics.md.html"},"url":"https://yangjunghyun.github.io/yangjunghyun_/markdown/2022/03/11/Markdown-basics.md.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/yangjunghyun_/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://yangjunghyun.github.io/yangjunghyun_/feed.xml" title="JUNGHYUN YANG" /><link rel="shortcut icon" type="image/x-icon" href="/yangjunghyun_/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper">
+<a class="site-title" rel="author" href="/yangjunghyun_/">JUNGHYUN YANG</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger">
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewbox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+<a class="page-link" href="/yangjunghyun_/about/">About Me</a><a class="page-link" href="/yangjunghyun_/search/">Search</a><a class="page-link" href="/yangjunghyun_/categories/">Tags</a>
+</div>
+      </nav>
+</div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Markdown Cheat Sheet</h1>
+<p class="page-description">Markdown basics</p>
+<p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-03-11T00:00:00-06:00" itemprop="datePublished">
+        Mar 11, 2022
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      1 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i> 
+      
+        <a class="category-tags-link" href="/yangjunghyun_/categories/#markdown">markdown</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1">
+<a href="#markdown-cheat-sheet">Markdown Cheat Sheet</a>
+<ul>
+<li class="toc-entry toc-h2">
+<a href="#basic-syntax">Basic Syntax</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#heading">Heading</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-entry toc-h1">
+<a href="#h1">H1</a>
+<ul>
+<li class="toc-entry toc-h2">
+<a href="#h2">H2</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#h3">H3</a></li>
+<li class="toc-entry toc-h3"><a href="#bold">Bold</a></li>
+<li class="toc-entry toc-h3"><a href="#italic">Italic</a></li>
+<li class="toc-entry toc-h3"><a href="#blockquote">Blockquote</a></li>
+<li class="toc-entry toc-h3"><a href="#ordered-list">Ordered List</a></li>
+<li class="toc-entry toc-h3"><a href="#unordered-list">Unordered List</a></li>
+<li class="toc-entry toc-h3"><a href="#code">Code</a></li>
+<li class="toc-entry toc-h3"><a href="#horizontal-rule">Horizontal Rule</a></li>
+<li class="toc-entry toc-h3"><a href="#link">Link</a></li>
+<li class="toc-entry toc-h3"><a href="#image">Image</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2">
+<a href="#extended-syntax">Extended Syntax</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#table">Table</a></li>
+<li class="toc-entry toc-h3"><a href="#fenced-code-block">Fenced Code Block</a></li>
+<li class="toc-entry toc-h3"><a href="#footnote">Footnote</a></li>
+<li class="toc-entry toc-h3"><a href="#heading-id">Heading ID</a></li>
+<li class="toc-entry toc-h3"><a href="#custom-id">My Great Heading</a></li>
+<li class="toc-entry toc-h3"><a href="#definition-list">Definition List</a></li>
+<li class="toc-entry toc-h3"><a href="#strikethrough">Strikethrough</a></li>
+<li class="toc-entry toc-h3"><a href="#task-list">Task List</a></li>
+<li class="toc-entry toc-h3"><a href="#emoji">Emoji</a></li>
+<li class="toc-entry toc-h3"><a href="#highlight">Highlight</a></li>
+<li class="toc-entry toc-h3"><a href="#subscript">Subscript</a></li>
+<li class="toc-entry toc-h3"><a href="#superscript">Superscript</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="markdown-cheat-sheet">
+<a class="anchor" href="#markdown-cheat-sheet" aria-hidden="true"><span class="octicon octicon-link"></span></a>Markdown Cheat Sheet</h1>
+
+<p>Thanks for visiting <a href="https://www.markdownguide.org">The Markdown Guide</a>!</p>
+
+<p>This Markdown cheat sheet provides a quick overview of all the Markdown syntax elements. It can’t cover every edge case, so if you need more information about any of these elements, refer to the reference guides for <a href="https://www.markdownguide.org/basic-syntax">basic syntax</a> and <a href="https://www.markdownguide.org/extended-syntax">extended syntax</a>.</p>
+
+<h2 id="basic-syntax">
+<a class="anchor" href="#basic-syntax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic Syntax</h2>
+
+<p>These are the elements outlined in John Gruber’s original design document. All Markdown applications support these elements.</p>
+
+<h3 id="heading">
+<a class="anchor" href="#heading" aria-hidden="true"><span class="octicon octicon-link"></span></a>Heading</h3>
+
+<h1 id="h1">
+<a class="anchor" href="#h1" aria-hidden="true"><span class="octicon octicon-link"></span></a>H1</h1>
+<h2 id="h2">
+<a class="anchor" href="#h2" aria-hidden="true"><span class="octicon octicon-link"></span></a>H2</h2>
+<h3 id="h3">
+<a class="anchor" href="#h3" aria-hidden="true"><span class="octicon octicon-link"></span></a>H3</h3>
+
+<h3 id="bold">
+<a class="anchor" href="#bold" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bold</h3>
+
+<p><strong>bold text</strong></p>
+
+<h3 id="italic">
+<a class="anchor" href="#italic" aria-hidden="true"><span class="octicon octicon-link"></span></a>Italic</h3>
+
+<p><em>italicized text</em></p>
+
+<h3 id="blockquote">
+<a class="anchor" href="#blockquote" aria-hidden="true"><span class="octicon octicon-link"></span></a>Blockquote</h3>
+
+<blockquote>
+  <p>blockquote</p>
+</blockquote>
+
+<h3 id="ordered-list">
+<a class="anchor" href="#ordered-list" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ordered List</h3>
+
+<ol>
+  <li>First item</li>
+  <li>Second item</li>
+  <li>Third item</li>
+</ol>
+
+<h3 id="unordered-list">
+<a class="anchor" href="#unordered-list" aria-hidden="true"><span class="octicon octicon-link"></span></a>Unordered List</h3>
+
+<ul>
+  <li>First item</li>
+  <li>Second item</li>
+  <li>Third item</li>
+</ul>
+
+<h3 id="code">
+<a class="anchor" href="#code" aria-hidden="true"><span class="octicon octicon-link"></span></a>Code</h3>
+
+<p><code class="language-plaintext highlighter-rouge">code</code></p>
+
+<h3 id="horizontal-rule">
+<a class="anchor" href="#horizontal-rule" aria-hidden="true"><span class="octicon octicon-link"></span></a>Horizontal Rule</h3>
+
+<hr>
+
+<h3 id="link">
+<a class="anchor" href="#link" aria-hidden="true"><span class="octicon octicon-link"></span></a>Link</h3>
+
+<p><a href="https://www.markdownguide.org">Markdown Guide</a></p>
+
+<h3 id="image">
+<a class="anchor" href="#image" aria-hidden="true"><span class="octicon octicon-link"></span></a>Image</h3>
+
+<p><img src="https://www.markdownguide.org/assets/images/tux.png" alt="alt text"></p>
+
+<h2 id="extended-syntax">
+<a class="anchor" href="#extended-syntax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extended Syntax</h2>
+
+<p>These elements extend the basic syntax by adding additional features. Not all Markdown applications support these elements.</p>
+
+<h3 id="table">
+<a class="anchor" href="#table" aria-hidden="true"><span class="octicon octicon-link"></span></a>Table</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Syntax</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Header</td>
+      <td>Title</td>
+    </tr>
+    <tr>
+      <td>Paragraph</td>
+      <td>Text</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="fenced-code-block">
+<a class="anchor" href="#fenced-code-block" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fenced Code Block</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "firstName": "John",
+  "lastName": "Smith",
+  "age": 25
+}
+</code></pre></div></div>
+
+<h3 id="footnote">
+<a class="anchor" href="#footnote" aria-hidden="true"><span class="octicon octicon-link"></span></a>Footnote</h3>
+
+<p>Here’s a sentence with a footnote. <sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup></p>
+
+<h3 id="heading-id">
+<a class="anchor" href="#heading-id" aria-hidden="true"><span class="octicon octicon-link"></span></a>Heading ID</h3>
+
+<h3 id="custom-id">
+<a class="anchor" href="#custom-id" aria-hidden="true"><span class="octicon octicon-link"></span></a>My Great Heading</h3>
+
+<h3 id="definition-list">
+<a class="anchor" href="#definition-list" aria-hidden="true"><span class="octicon octicon-link"></span></a>Definition List</h3>
+
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+
+<h3 id="strikethrough">
+<a class="anchor" href="#strikethrough" aria-hidden="true"><span class="octicon octicon-link"></span></a>Strikethrough</h3>
+
+<p><del>The world is flat.</del></p>
+
+<h3 id="task-list">
+<a class="anchor" href="#task-list" aria-hidden="true"><span class="octicon octicon-link"></span></a>Task List</h3>
+
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Write the press release</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update the website</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Contact the media</li>
+</ul>
+
+<h3 id="emoji">
+<a class="anchor" href="#emoji" aria-hidden="true"><span class="octicon octicon-link"></span></a>Emoji</h3>
+
+<p>That is so funny! <img class="emoji" title=":joy:" alt=":joy:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f602.png" height="20" width="20"></p>
+
+<p>(See also <a href="https://www.markdownguide.org/extended-syntax/#copying-and-pasting-emoji">Copying and Pasting Emoji</a>)</p>
+
+<h3 id="highlight">
+<a class="anchor" href="#highlight" aria-hidden="true"><span class="octicon octicon-link"></span></a>Highlight</h3>
+
+<p>I need to highlight these ==very important words==.</p>
+
+<h3 id="subscript">
+<a class="anchor" href="#subscript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Subscript</h3>
+
+<p>H~2~O</p>
+
+<h3 id="superscript">
+<a class="anchor" href="#superscript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Superscript</h3>
+
+<p>X^2^</p>
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>This is the footnote. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</div>
+
+  </div>
+<a class="u-url" href="/yangjunghyun_/markdown/2022/03/11/Markdown-basics.md.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/yangjunghyun_/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/yangjunghyun_/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/yangjunghyun_/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>An easy to use blogging platform with support for Jupyter Notebooks.</p>
+      </div>
+    </div>
+
+    <div class="social-links">
+<ul class="social-media-list">
+<li><a rel="me" href="https://github.com/fastai" target="_blank" title="fastai"><svg class="svg-icon grey"><use xlink:href="/yangjunghyun_/assets/minima-social-icons.svg#github"></use></svg></a></li>
+<li><a rel="me" href="https://twitter.com/fastdotai" target="_blank" title="fastdotai"><svg class="svg-icon grey"><use xlink:href="/yangjunghyun_/assets/minima-social-icons.svg#twitter"></use></svg></a></li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
