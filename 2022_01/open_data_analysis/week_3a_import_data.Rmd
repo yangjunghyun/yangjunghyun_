@@ -1,0 +1,137 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r message = FALSE}
+#rm(list = ls())
+library(tidyverse)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+heights <- read_csv("data/heights.csv")
+
+heights
+
+```
+```{r}
+read_csv("The first line of metadata
+The second line of metadata
+  x,y,z
+  1,2,3", skip = 2) #앞의 두 줄을 날릴 때
+
+read_csv("# A comment I want to skip
+  x,y,z
+  1,2,3", comment = "#") #주석을 무시하고 데이터를 읽을 때
+```
+
+
+
+```{r}
+# 새로운 라인을 추가할 때 \n
+read_csv("1,2,3 \n
+         4,5,6",col_names = FALSE) #col_names가 없을 때
+# 자동으로 X1:X3 컬 네임 생성
+```
+
+```{r}
+# col_names를 붙여줄 때
+read_csv("1,2,3\n4,5,6", col_names = c("x","y","z"))
+```
+
+### .을 na로 취급함
+```{r}
+# .을 na로 지정해줌 (메모리 절약)
+read_csv("a,b,c\n1,2,.", na=".")
+```
+
+## 한글로 된 데이터 깨지지 않고 읽어오기
+### Locale 설정 및 확인
+
+- 한글이 깨질 때는 locale을 한글로 설정
+
+```{r}
+Sys.getlocale()
+
+#Sys.setlocale("LC_ALL","Korean") # 언어 한글로
+#Sys.setlocale("LC_ALL","English") # 언어 영어로
+#Sys.setlocale("LC_ALL","C") # 강제 언어 삭제
+```
+
+### 한글 파일 읽어오기
+
+```{r}
+Sys.setlocale("LC_ALL","Korean") #언어 한글로
+
+exercise <- read_csv("data/exercise.csv")
+
+exercise
+
+#?guess_encoding
+# 명령어로 인코딩 찾기
+guess_encoding("data/exercise.csv")
+
+# 파일을 읽을 때 인코딩을 입력
+exercise <- read_csv("data/exercise.csv", locale = locale(encoding='EUC-KR'))
+exercise
+```
+
+### locale에 따른 한글 object의 저장
+
+```{r}
+Sys.setlocale("LC_ALL","Korean") #언어 한글로
+a <- "한글"; print(a)
+exercise$이름; #데이터프레임에서 한글 컬럼 불러오기
+
+Sys.setlocale("LC_ALL","English")
+a <- "한글"; print(a)
+exercise$이름;
+
+```
+
+### writing to a file
+
+```{r}
+getwd()
+
+heights <- read_csv("data/heights.csv")
+
+write_csv(heights, "data/heights_saved.csv")
+```
+
+
+1. 'write_rds()' and 'read_rds()' are uniform wrappers around the base functions readRDS() and saveRDS().
+
+Thses store data in R's custom binary format called RDS;
+
+```{r}
+write_rds(heights, "data/heights.rds")
+read_rds("data/heights.rds")
+```
+
+2. The feather package implements a fast binary file format that can be shared across programming languages:
+
+```{r}
+#install.packages("feather")
+library(feather)
+
+write_feather(heights, "data/heights.feather")
+read_feather("data/heights.feather")
+```
+```{r}
+file.remove("data/heights_saved.csv")
+```
+
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
