@@ -1,0 +1,294 @@
+---
+title: "week_4b_plotly.Rmd"
+author: "junghyun"
+date: '2022 3 31 '
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+# install.packages("plotly")
+```
+
+```{r, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(plotly)
+library(readxl)
+library(scales)
+```
+# Load dataset
+
+```{r}
+mtcars <- mtcars
+mtcars
+```
+
+
+```{r}
+vehicles <- c("Four Cylinders","Six Cylinders","Eight Cylinders")
+cylinders <- c(sum(mtcars$cyl==4), sum(mtcars$cyl==6), sum(mtcars$cyl==8)) 
+
+vehicles
+cylinders
+```
+
+
+```{r}
+# 하나의 데이터프레임으로 묶음
+veh_cyl <- tibble(vehicles, cylinders)
+veh_cyl
+```
+
+```{r}
+# plot_ly(data= , x = , y = , type = )
+# plot_ly는 %>% 를 지원함.
+plot_ly(data = veh_cyl, 
+        x = vehicles, 
+        y = cylinders, 
+        type = "bar",
+        text = cylinders, textposition = "auto") %>% 
+  layout(title = "Number of Vehicles in mtcars with   4,6, and 8 Cylinders",
+         titlefont = list(size = 28, color = "orange", family = "Calibri"),
+    yaxis = list(title = "Number of Vehicles",
+                 titlefont = list(color = "black", family = "Arial", size = 26),
+                 tickfont = list(color = "black", family = "Arial", size = 20)),
+    xaxis = list(title = "Number of Cylinders",
+                 titlefont = list(color = "red", family = "Times New Roman", size = 22),
+                 tickfont = list(color = "green", family = "Cambria", size = 18)))%>% 
+  layout(margin = list( 
+                l = 10,
+                r = 10,
+                b = 0,
+                t = 40)) #margin : 여백
+```
+```{r}
+plot_ly(data = veh_cyl, 
+        x = vehicles, 
+        y = cylinders, 
+        type = "bar",
+        text = paste0("See ",cylinders))
+```
+
+# Graph a Timeseries in Plotly
+
+```{r}
+library(nycflights13)
+```
+```{r}
+head(flights)
+
+#일자별로 그룹
+dep.delay.by.day <- flights %>% 
+  group_by(day) %>%
+  summarise (mean_dep_delay=mean(dep_delay,na.rm=T))
+
+# 가장 기본적인 plotly 시각화
+plot_ly( data = dep.delay.by.day, 
+         x = ~day, 
+         y =~mean_dep_delay) %>% 
+  add_trace(type = "scatter" ,mode = "lines+markers")
+
+# add_trace : 추가적으로 그릴 것?
+```
+```{r}
+# 다양한 customize
+plot_ly( data = dep.delay.by.day, 
+         x = ~day, 
+         y =~mean_dep_delay, 
+         text = ~paste('</br> Day: ', day,
+                       '</br> Departure Delay: ', round(mean_dep_delay,3)), 
+         hoverinfo = "text") %>% 
+  add_trace(type = "scatter" ,
+            mode = "lines+markers")  %>% 
+  layout(
+    title = "Departure delay by day",
+    xaxis = list(
+      title = "Day"),
+    yaxis = list(
+      title = "Average departure delay"))
+```
+# Animation with plotly
+```{r}
+df <- data.frame(
+  x = c(1,2,1), 
+  y = c(1,2,1), 
+  f = c(1,2,3)
+)
+
+fig <- df %>%
+  plot_ly(
+    x = ~x,
+    y = ~y,
+    frame = ~f,
+    type = 'scatter',
+    mode = 'markers',
+    showlegend = F
+  )
+
+fig
+```
+
+Mulitple Trace Animations
+```{r}
+#install.packages("gapminder")
+library(gapminder)
+#> Warning: package 'gapminder' was built under R version 4.0.5
+
+df <- gapminder 
+
+# No animation
+fig <- df %>%
+  plot_ly(
+    x = ~gdpPercap, 
+    y = ~lifeExp, 
+    size = ~pop, 
+    color = ~continent, 
+    text = ~country,
+    frame = ~year,
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers',
+    fill = ~''
+  ) %>% layout(
+    xaxis = list(type = "log"))
+
+fig
+```
+```{r}
+# With animation
+fig <- df %>%
+  plot_ly(
+    x = ~gdpPercap, 
+    y = ~lifeExp, 
+    size = ~pop, 
+    color = ~continent, 
+    frame = ~year, 
+    text = ~country, 
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers',
+    fill = ~''
+  ) %>% layout(
+    xaxis = list(type = "log"))
+
+fig
+```
+
+# Add Animation Options
+```{r}
+fig <- fig %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+
+fig
+```
+
+# Add Button Options
+```{r}
+fig <- fig %>%
+  animation_button(
+    x = 1, xanchor = "right", y = 0, yanchor = "bottom"
+  )
+
+fig
+```
+
+# Add Slider Options
+```{r}
+fig <- fig %>%
+  animation_slider(
+    currentvalue = list(prefix = "YEAR ", font = list(color="red"))
+  )
+
+fig
+```
+
+### ggplotly
+
+```{r}
+# ggplot과 plotly를 같이 사용
+#느림 잘 안씀
+# p1<- ggplot(data = diamonds) + 
+#   geom_bar(mapping = aes(x = clarity, fill = cut), position = "fill")
+# p1
+```
+
+
+# 예제 연습
+
+#https://plotly.com/r/
+
+```{r}
+View(diamonds)
+fig <- plot_ly(ggplot2::diamonds, y = ~price, color = ~cut, type = "box")
+
+fig
+```
+
+
+### Dropdown menu
+
+```{r}
+library(MASS)
+
+covmat <- matrix(c(0.8,0.4,0.3,0.8), nrow = 2, byrow= T)
+df <- mvrnorm(n = 10000, c(0,0), Sigma = covmat)
+df <- as.data.frame(df)
+
+colnames(df) <- c("x","y")
+fig <- plot_ly(df, x = ~x, y = ~y, alpha = 0.3)
+fig
+
+fig <- fig %>% 
+  add_markers(marker = list(line = list(color = "black", width = 1)))
+
+fig
+```
+### Add dropdown
+
+```{r}
+fig <- fig %>% layout(
+  title = "Drop down menus - plot type",
+  xaxis = list(domain = c(0.1,1)),
+  yaxis = list(title = "y"),
+  updatemenus = list(
+    list(
+      y = 0.8,
+      buttons = list(
+        list(method = "restyle",
+             args = list("type", "scatter"),
+             label= "Scatter"),
+    
+    list(method = "restyle",
+         args = list("type","histogram2d"),
+         label = "2D Histogram")))))
+
+fig
+```
+
+
+```{r}
+# library(plotly)
+
+dens <- with(diamonds, tapply(price, INDEX = cut, density))
+df <- data.frame(
+  x = unlist(lapply(dens, "[[", "x")),
+  y = unlist(lapply(dens, "[[", "y")),
+  cut = rep(names(dens), each = length(dens[[1]]$x))
+)
+
+fig <- plot_ly(df, x = ~x, y = ~y, color = ~cut) 
+fig <- fig %>% add_lines()
+
+fig
+```
+
