@@ -1,0 +1,432 @@
+---
+title: "text_analysis"
+author: "junghyun"
+date: '2022 5 31 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load dependencies
+```{r}
+# install.packages("tidytext")
+# install.packages("janeaustenr")
+library(tidyverse)
+library(tidytext)
+library(janeaustenr)
+library(stringr)
+```
+
+# Data load & preprocessing
+
+```{r}
+# rm(list = ls())
+books <- austen_books()
+
+
+original_books <- austen_books() %>%
+  group_by(book) %>%
+  mutate(linenumber = row_number(),
+         chapter = cumsum(str_detect(
+           text,
+           regex("^chapter \\d",
+                 ignore_case = TRUE)
+         ))) %>% ungroup()
+
+original_books
+```
+### Text 데이터의 Tokenization 수행
+#토큰 : 단어별로 쪼개기?
+
+```{r}
+tidy_books <- original_books %>%
+  unnest_tokens(word, text) #단어를 text로 word라는 컬럼을 생성
+
+tidy_books
+```
+
+### Remove stop words 불용어 제거하기 ex) to, of, a, the ... 의미가 없는 단어들
+
+```{r}
+data(stop_words)
+
+tidy_books <- tidy_books %>%
+  anti_join(stop_words) #anti_join(): 겹치는 단어를 제거해줌
+```
+
+### Visualize word frequency
+
+단어 빈도수 시각화
+모든 책에 대해서 어떠한 단어가 많이 등장했는지 관찰
+
+```{r}
+vis_text <- tidy_books %>%
+  count(word, sort = TRUE) %>%
+  slice_max(n, n=15) %>%
+  mutate(word = reorder(word, n))
+
+ggplot(vis_text, aes(n, word))+
+  geom_col()+
+  labs(y = NULL)
+```
+### 연습문제 : 책 별로 단어 빈도 시각화해보기
+Hint : 위의 코드에서 `group_by`를 활용하고, ggplot에서는 `facet_wrap`을 활용
+
+```{r}
+vis_text <- tidy_books %>%
+  group_by(book) %>% 
+  count(word, sort = TRUE) %>%
+  slice_max(n, n=15) %>%
+  mutate(word = reorder(word, n))
+
+ggplot(vis_text, aes(n, word))+
+  geom_col()+
+  labs(y = NULL) +
+  facet_wrap(vars(book),scales = "free")
+
+# 일케하면 정렬 제대로댐
+ggplot(vis_text, aes(n, reorder_within(word,n,book),fill = book))+
+  geom_col(show.legend =FALSE)+
+  labs(y = NULL)+
+  facet_wrap(vars(book), scales = "free")+
+  scale_y_reordered()
+
+vis_text$word_reorder_within <- reorder_within(vis_text$word, vis_text$n, vis_text$book)
+
+vis_text$word_fac_reorder <- fct_reorder(vis_text$word, vis_text$n)
+
+```
+
+
+# Review of tf-idf score # 단어의 상대적인 빈도를 보여줌
+### Load dependencies
+
+```{r}
+# library(tidyverse)
+# library(janeaustenr)
+# library(tidytext)
+```
+
+### Data load & Tokenization
+
+```{r}
+book_tokens <- austen_books() %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words)
+
+#책 별로 단어 수 count
+book_words <- book_tokens %>%
+  count(book, word) %>% 
+  arrange(book, desc(n))
+
+book_words
+```
+
+### Calculate tf-idf score
+
+```{r}
+book_tf_idf <- book_words %>%
+  bind_tf_idf(term = word, document = book, n = n)
+```
+
+### Visualize tf-idf score
+
+```{r}
+library(forcats)
+
+# 책별로 tf-idf 가 높은 단어 15개씩 자름
+book_tf_idf_vis <- book_tf_idf %>%
+  group_by(book) %>%
+  slice_max(tf_idf, n = 15) %>%
+  ungroup()
+
+ggplot(book_tf_idf_vis, aes(tf_idf, fct_reorder(word, tf_idf), fill = book)) +
+  geom_col(show.leg.end = FALSE) +
+  facet_wrap(~book, ncol = 3, scales = "free") +
+  labs(x = "tf-idf", y = NULL)
+```
+
+# Sentiment Analysis # 감성분석 (단어의 긍정,부정)
+## Import libraries
+
+```{r}
+library(tidytext)
+library(tidyverse)
+library(janeaustenr)
+# install.packages("textdata")
+library(textdata)
+```
+
+# 감성어 사전 읽어오기
+
+```{r}
+bing <- get_sentiments("bing")
+nrc <- get_sentiments("nrc")
+affin <- get_sentiments("afinn")
+
+head(bing)
+head(nrc)
+head(affin)
+table(affin$value)
+table(nrc$sentiment)
+```
+### Tokenization
+
+```{r}
+tidy_books <- austen_books() %>%
+  group_by(book) %>%
+  mutate(
+    linenumber = row_number(),
+    chapter = cumsum(str_detect(text, 
+                                regex("^chapter \\d", ignore_case = TRUE)))) %>% ungroup() %>% unnest_tokens(word, text)
+
+tidy_books
+```
+
+### Sentiment join (bing 감성어 사전 사용)
+
+```{r}
+# 책별로, 80줄 단위(index)별로, negative & positive 사용빈도(n) 추출
+# inner_join : 매칭이 안되는 행은 전부 없앰
+# left_join : 매칭이 안되면 NULL
+jane_austen_sentiment_count <- tidy_books %>%
+  inner_join(bing, by="word") %>%
+  count(book, index = linenumber %/% 80, sentiment)
+
+jane_austen_sentiment_count
+
+# sentiment 변수를 spread하여 positive, negative 컬럼을 새로 생성
+# positive 단어수와 negative 단어수의 차이로 sentiment_score 계산
+jane_austen_sentiment <- jane_austen_sentiment_count %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment_score = positive - negative)
+
+jane_austen_sentiment
+```
+
+### Visualize sentiment score
+
+80줄 단위 간격으로 sentiment score 시각화
+
+```{r}
+ggplot(jane_austen_sentiment, 
+       aes(x=index, y=sentiment_score, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~book, ncol = 2, scales = "free_x")
+```
+
+Chapter 단위로 sentiment score 시각화
+
+```{r}
+# 책별로, Chapter 별로, negative & positive 사용빈도(n) 추출
+jane_austen_sentiment_count <- tidy_books %>%
+  inner_join(bing, by="word") %>%
+  count(book, chapter, sentiment)
+
+# sentiment 변수를 spread하여 positive, negative 컬럼을 새로 생성
+# positive 단어수와 negative 단어수의 차이로 sentiment_score 계산
+jane_austen_sentiment_chapter <- jane_austen_sentiment_count %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment_score = positive - negative)
+
+# 시각화
+ggplot(jane_austen_sentiment_chapter,
+       aes(x=chapter, y=sentiment_score, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~book, ncol = 2, scales = "free_x")
+```
+
+### Sentiment score 계산 (affin 감성어 사전 사용)
+
+affin 감성어 사전의 경우 bing 사전에 비해 갯수는 적지만 단어의 score가 명시되어 있어서, 긍정/부정의 강도를 표현하기가 더 용이함
+
+```{r}
+table(affin$value)
+table(bing$sentiment)
+```
+```{r}
+# 책별로, 80줄 단위(index)별로, 등장한 단어와 각 단어의 긍/부정값(value) 추출
+# index 별로 value의 합을 계산하여 sentiment_score로 정의
+jane_austen_sentiment_affin <- tidy_books %>%
+  inner_join(affin, by="word") %>%
+  group_by(book, index = linenumber %/% 80) %>%
+  summarise(sentiment_score=sum(value))
+
+ggplot(jane_austen_sentiment_affin, 
+       aes(x=index, y=sentiment_score, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~book, ncol = 2, scales = "free_x")
+```
+
+### Sentiment score 계산 (nrc 감성어 사전 사용)
+
+```{r}
+# nrc 감성어 사전에서 긍정/부정만 추출
+nrc_pn <- nrc %>% filter(sentiment %in% c("positive","negative"))
+
+# 책별로, 80줄 단위(index)별로, negative & positive 사용빈도(n) 추출
+jane_austen_sentiment_count <- tidy_books %>%
+  inner_join(nrc_pn, by="word") %>%
+  count(book, index = linenumber %/% 80, sentiment)
+
+# sentiment 변수를 spread하여 positive, negative 컬럼을 새로 생성
+# positive 단어수와 negative 단어수의 차이로 sentiment_score 계산
+jane_austen_sentiment_nrc <- jane_austen_sentiment_count %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment_score = positive - negative)
+
+# 시각화
+ggplot(jane_austen_sentiment_nrc, 
+       aes(x=index, y=sentiment_score, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~book, ncol = 2, scales = "free_x")
+```
+
+### Most common positive and negative words
+
+```{r}
+# Bing 감성어 사전을 Join 한 후,
+# 단어별, 긍정/부정별로 얼마나 많은 횟수만큼 사용됐는지 count
+
+bing_word_counts <- tidy_books %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE)
+
+bing_word_counts
+```
+### 시각화
+
+```{r}
+# sentiment별(긍정/부정별), 가장 많이 사용된 단어 10개를 추출
+# word를 단어빈도 기준으로 재정렬한 후, 
+# ggplot의 geom_col으로 시각화
+
+bing_word_counts %>%
+  group_by(sentiment) %>%
+  top_n(n=10) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(n, word, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(x = "Contribution to sentiment",
+       y = NULL)
+```
+
+# 이상한 단어에 대한 보정
+### miss라는 단어는 사실 부정적 표현이라고 볼 수 없음. 이에 대한 보정을 수행
+
+
+```{r}
+stop_words
+
+custom_stop_words <- bind_rows(tibble(word = c("miss"),  
+                                      lexicon = c("custom")), 
+                               stop_words)
+
+custom_stop_words
+```
+
+```{r}
+# 단어 보정
+# stop_words들을 제거함
+tidy_books <- tidy_books %>%
+  anti_join(custom_stop_words)
+#> Joining, by = "word"
+
+# 단어별, 긍정/부정별로 얼마나 많은 횟수만큼 사용됐는지 count
+bing_word_counts <- tidy_books %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE)
+#> Joining, by = "word"
+
+# sentiment별(긍정/부정별), 가장 많이 사용된 단어 10개를 추출
+# word를 단어빈도 기준으로 재정렬한 후, 
+# ggplot의 geom_col으로 시각화
+
+bing_word_counts %>%
+  group_by(sentiment) %>%
+  top_n(n=15) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(n, word, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(x = "Contribution to sentiment",
+       y = NULL)
+```
+
+# Wordcloud
+
+
+```{r}
+library(wordcloud2)
+library(viridis)
+
+viridis_pal(option = "plasma")(6)
+
+# wordcloud용 데이터 생성
+dat_wordcloud <- bing_word_counts %>% 
+  mutate(col=ifelse(sentiment=="positive",
+                    viridis_pal(option = "plasma")(6)[5],
+                    viridis_pal(option = "plasma")(6)[2])) %>%
+  select(word,n,col)
+
+wordcloud2(dat_wordcloud,
+           color = dat_wordcloud$col, 
+           backgroundColor = "black",
+           fontFamily = '나눔바른고딕',
+           minSize=10, 
+           shape = "circle",
+           size=0.6)
+```
+wordcloud 라이브러리를 써도 무방함
+
+```{r}
+library(wordcloud)
+library(reshape2)
+
+bing_word_counts %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("gray20", "gray80"),
+                   max.words = 100,
+                   scale=c(3,.1))
+```
+```{r}
+tmp2 <- bing_word_counts %>%
+  spread(sentiment, n, fill = 0)
+tmp2 <- tmp2 %>% data.frame()
+row.names(tmp2) <- tmp2$word
+tmp2$word<-NULL
+tmp2 %>% comparison.cloud(colors = c("gray20", "gray80"),
+                   max.words = 100,
+                   scale=c(2,.1))
+```
+
+# 책별로 긍/부정 단어 시각화
+
+```{r}
+# 책별로, 단어별로, 긍정/부정별로 단어수 count
+# negative 단어는 음수로 표시
+# 책별로, 감정별로 그룹해서 가장 많이 등장한 단어 10개씩 뽑기
+pos_neg <- tidy_books %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(book, word, sentiment, sort = TRUE) %>%
+  mutate(n = ifelse(sentiment == "negative", -n, n)) %>%
+  group_by(book,sentiment) %>%
+  slice_max(abs(n), n = 10, with_ties = F)
+
+# 시각화
+ggplot(data=pos_neg, aes(x=n,
+                         y=reorder(word,n), 
+                         fill = sentiment)) +
+  geom_col() +
+  labs(x = "Contribution to sentiment", y = NULL) + 
+  facet_wrap(.~book, scales = "free")
+```
+```{r}
+
+```
+
