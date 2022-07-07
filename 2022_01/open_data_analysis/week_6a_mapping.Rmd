@@ -1,0 +1,316 @@
+# (PART) 확장 {-}
+
+# R {#adv-map}을(를) 사용하여 맵 만들기
+
+## 필수 구성 요소 {-}
+
+- 이 장에서는 이미 사용하고 있는 다음 패키지가 필요합니다.
+
+```{r 08-mapping-1, message=FALSE }
+library(sf)
+library(tidyverse)
+library(spData)
+library(spDataLarge)
+# library(raster)
+```
+
+- 또한 다음과 같은 시각화 패키지를 사용합니다(인터랙티브 매핑 응용 프로그램을 개발하려면 반짝이 설치).
+
+```{r 08-mapping-2, message=FALSE}
+library(tmap)    # for static and interactive maps
+library(leaflet) # for interactive maps
+library(ggplot2) # tidyverse data visualization package
+```
+
+
+## 정적 지도
+
+
+```{r 08-mapping-3, eval=FALSE}
+# ggplot2 시각화 형태와 마찬가지로 data를 input으로 입력한 뒤, 
+# 표출 형태는 뒤에 Layer를 추가해서 자유롭게 선택 가능
+
+# Add fill layer to nz shape
+# polygon 형태
+tm_shape(nz) +
+  tm_fill() 
+# Add border layer to nz shape
+tm_shape(nz) +
+  tm_borders() 
+# Add fill and border layers to nz shape
+tm_shape(nz) +
+  tm_fill() +
+  tm_borders() 
+```
+
+### map objects (맵 개체) {#map-obj}
+
+**tmap*의 유용한 기능은 맵을 나타내는 *개체*를 저장할 수 있다는 것입니다.
+아래의 코드 청크는 그림 \@ref (fig:tmshape)의 마지막 플롯을 클래스 'tmap'의 객체로 저장함으로써 이를 보여준다.
+
+```{r 08-mapping-4}
+map_nz <- tm_shape(nz) + tm_polygons()
+class(map_nz)
+```
+
+'map_nz'는 나중에 플로팅할 수 있습니다. 예를 들어, 아래 그림과 같이 계층을 추가하거나 콘솔에서 'map_nz'를 실행하면 됩니다.
+
+'+ tm_shape(new_obj)'를 사용하여 새 *shape*를 추가할 수 있습니다.
+이 경우 'new_obj'는 이전 레이어 위에 플로팅할 새로운 공간 객체를 나타낸다.
+이러한 방식으로 새로운 도형이 추가되면 다른 도형이 추가될 때까지 이후의 모든 미적 기능은 도형을 참조합니다.
+이 구문을 사용하면 다음 코드 청크에서와 같이 여러 모양과 레이어를 가진 맵을 만들 수 있는데, 이는 함수 'tm_raster()'를 사용하여 래스터 레이어를 플롯하는 데 사용된다.
+
+```{r 08-mapping-5, results='hide'}
+# tmap object위에 다른 map을 추가할 수 있음
+data(nz_elev) # Zew Zeleanmd elevation raster data
+
+map_nz1 <- map_nz +
+  tm_shape(nz_elev) + tm_raster(alpha = 0.7)
+
+map_nz1
+```
+
+
+아래 코드 청크에서 볼 수 있듯이 더 많은 모양과 층을 추가할 수 있으며, 이는 뉴질랜드의 [해상수]를 나타내는 'nz_water'를 만들고 그 결과 생긴 선을 기존 지도 객체에 추가한다.
+
+```{r 08-mapping-6}
+# st_union : 하나의 polygon으로 합쳐줌
+nz_water <- st_union(nz) %>% st_buffer(22200) %>% 
+  st_cast(to = "LINESTRING")
+
+map_nz2 <- map_nz1 +
+  tm_shape(nz_water) + tm_lines(col="blue")
+```
+
+tmap 객체에 추가할 수 있는 도면층 또는 도형의 수에 제한은 없습니다.
+같은 모양을 여러 번 사용할 수도 있습니다.
+
+```{r 08-mapping-7}
+map_nz3 <- map_nz2 +
+  tm_shape(nz_height) + tm_dots()
+```
+
+ 'tmap_arrange()가 추출된 단일 '메타플롯'에 여러 맵 개체를 정렬할 수 있다는 것입니다.
+
+```{r}
+tmap_arrange(map_nz1, map_nz2, map_nz3)
+```
+
+
+### 미학
+
+채우기 레이어와 테두리 레이어에 가장 일반적으로 사용되는 미학으로는 색상, 투명도, 선폭, 선종류 등이 있으며 각각 col, alpha, lwd, lty 인수로 설정된다.
+
+
+```{r tmstatic, message=FALSE, fig.cap="The impact of changing commonly used fill and border aesthetics to fixed values.", fig.scap="The impact of changing commonly used aesthetics."}
+ma1 = tm_shape(nz) + tm_fill(col = "red")
+ma2 = tm_shape(nz) + tm_fill(col = "red", alpha = 0.3)
+ma3 = tm_shape(nz) + tm_borders(col = "blue")
+ma4 = tm_shape(nz) + tm_borders(lwd = 3)
+ma5 = tm_shape(nz) + tm_borders(lty = 2)
+ma6 = tm_shape(nz) + tm_fill(col = "red", alpha = 0.3) + tm_borders(col = "blue", lwd = 3, lty = 2)
+tmap_arrange(ma1, ma2, ma3, ma4, ma5, ma6,ncol = 3)
+```
+
+기본 R 플롯과 마찬가지로 미학을 정의하는 인수도 다양한 값을 수신할 수 있습니다.
+
+
+```{r 08-mapping-9, eval=FALSE}
+# ggplot과 마찬가지로 aesthetics값에 데이터 변수 값을 넣어도 됨
+# 변수의 값에 따라 도형의 크기나, 색을 달리 표현할 수 있음
+
+plot(st_geometry(nz), col = nz$Land_area)  # works
+# tm_shape(nz) + tm_fill(col = nz$Land_area) # fails
+#> Error: Fill argument neither colors nor valid variable name(s)
+```
+
+대신 'col'(및 선 레이어의 경우 'lwd', 점 레이어의 경우 'size'와 같이 다양할 수 있는 다른 미학)은 표시할 지오메트리와 관련된 속성을 명명하는 문자열을 필요로 한다.
+
+따라서 다음과 같이 원하는 결과를 얻을 수 있다(그림 \@ref(fig:tmcol))
+
+```{r 08-mapping-10, fig.show='hide', message=FALSE}
+# ggplot과 다르게, 변수 이름을 Character 형태로 넣어주어야 함
+tm_shape(nz) + tm_fill(col = "Land_area")
+```
+
+```{r}
+plot(nz["Land_area"])
+tm_shape(nz) + tm_fill(col = "Land_area")
+```
+
+'tm_fill()'과 같은 미적 층을 정의하는 함수의 중요한 논점은 'title'로, 관련 범례의 제목을 설정한다.
+다음 코드 청크는 변수 이름 'Land_area'보다 더 매력적인 이름을 제공함으로써 이 기능을 보여준다.
+
+```{r 08-mapping-11}
+legend_title = expression("Area (km"^2*")")
+map_nza = tm_shape(nz) +
+  tm_fill(col = "Land_area", title = legend_title) + tm_borders()
+
+
+# title 사이즈와 text 사이즈도 지정해 줄 수 있음
+# map_nza = tm_shape(nz) +
+#   tm_fill(col = "Land_area", title = legend_title) + 
+#   tm_borders()+
+#   tm_layout(legend.outside = TRUE,
+#             legend.title.size= 2,
+#             legend.text.size = 0.5)
+   
+
+map_nza
+```
+
+### 색상 설정
+
+- 기본 설정은 다음 단락에서 설명하는 'pretty' 구절을 사용합니다.
+- 'breaks'를 사용하면 수동으로 중단 시간을 설정할 수 있습니다.
+- n'은 숫자 변수가 분류되는 빈의 수를 설정합니다.
+- 'palette'는 색상표를 정의합니다(예: 'BuGn').
+
+```{r 08-mapping-12, eval=FALSE}
+tm_shape(nz) + tm_polygons(col = "Median_income")
+breaks = c(0, 3, 4, 5) * 10000
+tm_shape(nz) + tm_polygons(col = "Median_income", breaks = breaks)
+tm_shape(nz) + tm_polygons(col = "Median_income", n = 10)
+tm_shape(nz) + tm_polygons(col = "Median_income", palette = "BuGn")
+```
+
+색상 설정을 변경하는 또 다른 방법은 색상 구분(또는 빈) 설정을 변경하는 것입니다.
+수동으로 'breaks'를 설정하는 것 외에도 **tmap*을 사용하면 사용자가 'style' 인수로 자동으로 브레이크가 생성되도록 알고리즘을 지정할 수 있습니다.
+\index{tmap(표준)!브레이크 스타일}
+다음은 가장 유용한 브레이크 스타일 6가지입니다.
+
+- 기본 설정에서 'style = "pretty"는 가능한 한 정수로 나누고 균등하게 간격을 둔다.
+
+- 'style = "discription"은 입력 값을 동일한 범위의 빈으로 나누고 균일한 분포를 가진 변수에 적합하다(결과 맵의 색상 다양성이 거의 없을 수 있으므로 왜곡된 분포를 가진 변수에는 권장하지 않는다).
+
+- 'style = "quantile"은 동일한 수의 관측치가 각 범주에 속하도록 보장한다(빈 범위가 크게 다를 수 있는 잠재적 단점이 있음).
+
+- 'style = "sks"는 데이터에서 유사한 값의 그룹을 식별하고 범주 간의 차이를 최대화한다.
+
+- "style = "cont"(및 "order")는 연속적인 색 필드 위에 많은 색상을 나타내며, 특히 연속 래스터에 적합하다("order"는 왜곡된 분포를 시각화하는 데 도움이 될 수 있다).
+
+- style = cat은 범주별 값을 나타내며 각 범주가 고유한 색을 받도록 하기 위해 고안되었다.
+
+```{r}
+tmap_options(title.size = 0.7, 
+             title.position = c("right", "bottom"), 
+             legend.position = c("LEFT", "TOP"))
+
+m_equal = tm_shape(nz) +
+  tm_polygons(col = "Median_income", style = "equal") +
+  tm_layout(title = 'style = "equal"')
+
+m_pretty = tm_shape(nz) +
+  tm_polygons(col = "Median_income", style = "pretty") +
+  tm_layout(title = 'style = "pretty"') 
+
+m_quantile = tm_shape(nz) +
+  tm_polygons(col = "Median_income", style = "quantile") +           
+  tm_layout(title = 'style = "quantile"')
+
+m_jenks = tm_shape(nz) +
+  tm_polygons(col = "Median_income", style = "jenks") +
+  tm_layout(title = 'style = "jenks"')
+
+m_cont = tm_shape(nz_elev) +
+  tm_raster(col = "elevation", style = "cont", 
+            contrast = c(0.2, 1)) +
+  tm_layout(title = 'style = "cont"')
+
+m_cat = tm_shape(nz) +
+  tm_polygons(col = "Island", style = "cat") + 
+  tm_layout(title = 'style = "cat"')     
+
+tmap_arrange(m_pretty, m_equal, m_quantile, m_jenks, m_cont, m_cat, ncol=3) 
+tmap_options_reset()
+```
+
+팔레트는 위에서 설명한 breaks, n 및 style 인수에 의해 결정되고 빈과 관련된 색상 범위를 정의합니다.
+
+기본 색상 팔레트는 'tm_layout()'(자세한 내용은 섹션 \@ref(레이아웃) 참조)에 지정되어 있지만 'palette' 인수를 사용하여 빠르게 변경할 수 있습니다.
+색상 벡터 또는 새로운 색상 팔레트 이름을 예상하며, 'tmaptools::palette_explorer()와 대화식으로 선택할 수 있습니다.
+'-'를 접두사로 추가하여 팔레트 순서를 반전시킬 수 있습니다.
+
+```{r}
+# install.packages("tmaptools")
+library(tmaptools)
+palette_explorer()
+get_brewer_pal("Blues", n = 15)[1:15]
+
+get_brewer_pal("Blues",n=20)
+get_brewer_pal("Blues",n=20)[1:20]
+
+# 다른 방법
+library(RColorBrewer)
+display.brewer.all()
+brewer.pal("Blues", n=20) # Error 9개까지 제한이 있음
+brewer.pal("Blues", n=9)
+
+m_pretty = tm_shape(nz) +
+  tm_polygons(col = "Median_income",
+              style = "pretty", 
+              palette = "Blues", n = 15) +
+  tm_layout(title = 'style = "pretty"',
+            legend.outside = TRUE) 
+
+m_pretty
+
+m_pretty = tm_shape(nz) +
+  tm_polygons(col = "Median_income",
+              style = "pretty", 
+              palette = "viridis", n = 20) +
+  tm_layout(title = 'style = "pretty"',
+            legend.outside = TRUE) 
+
+m_pretty
+```
+
+색상 팔레트에는 범주형, 순차형 및 분기형(그림 \@ref(fig:colpal))의 세 가지 주요 색상 팔레트 그룹이 있으며 각각 다른 용도로 사용됩니다.
+
+범주형 팔레트는 쉽게 구별할 수 있는 색상으로 구성되며 주 이름 또는 토지 표지 클래스와 같은 특별한 순서가 없는 범주형 데이터에 가장 적합합니다.
+색은 직관적이어야 한다: 예를 들어 강은 파란색이어야 하고, 목초지는 녹색이어야 한다.
+범례가 크고 색상이 많은 맵은 해석할 수 없습니다.^[
+col = "MAP_COLORS"는 다수의 개별 폴리곤이 있는 지도(예: 개별 국가의 지도)에서 인접 폴리곤에 대한 고유한 색상을 만들 수 있습니다.
+] 
+
+두 번째 그룹은 순차 팔레트입니다.
+예를 들어 밝은 색에서 어두운 색(밝은 색상은 낮은 값을 나타내는 경향이 있음)으로 기울기를 따르며 연속형(숫자) 변수에 적합합니다.
+
+순차 팔레트는 아래 코드 청크에서 보여지듯이 단일(예: 'Blues'에서 연한 노란색에서 진한 파란색으로 이동) 또는 다중 색상/색상(예: 'YlOrBr'은 연한 노란색에서 주황색을 통해 갈색으로 이동)일 수 있습니다. 출력은 표시되지 않습니다. 결과를 보려면 코드를 직접 실행하십시오!
+
+```{r 08-mapping-13, eval=FALSE}
+# Sequaltial palettes - 적은 색으로 그라데이션을 표현
+tm_shape(nz) + tm_polygons("Population", palette = "Blues")
+tm_shape(nz) + tm_polygons("Population", palette = "YlOrBr")
+# tm_shape(nz) + tm_polygons("Population", palette = "-viridis", n = 7)
+
+```
+
+마지막 그룹인 분기 팔레트는 일반적으로 세 가지 색상(그림 \@ref(그림:colpal)) 사이에 있으며, 일반적으로 두 개의 단일 색상 순차 팔레트를 각 끝에 어두운 색상으로 결합함으로써 생성된다.
+주요 목적은 특정 온도, 중위 가구 소득 또는 가뭄 사건의 평균 확률과 같은 중요한 기준점으로부터의 차이를 시각화하는 것이다.
+기준점의 값은 'midpoint' 인수를 사용하여 **tmap*에서 조정할 수 있습니다.
+
+```{r}
+# 대조를 이루고 싶을 때는 Diverging color를 사용
+# 양 끝 색이 분명히 구분되는 다른 색으로 구성
+
+library(RColorBrewer)
+many_palette_plotter = function(color_names, n, titles){
+  n_colors = length(color_names)
+  ylim = c(0, n_colors)
+  par(mar = c(0, 5, 0, 0))
+  plot(1, 1, xlim = c(0, max(n)), ylim = ylim,
+       type = "n", axes = FALSE, bty = "n", xlab = "", ylab = "")
+  
+  for(i in seq_len(n_colors)){
+    one_color = brewer.pal(n = n, name = color_names[i])
+    rect(xleft = 0:(n - 1), ybottom = i - 1, xright = 1:n, ytop = i - 0.2,
+         col = one_color, border = "light gray")
+    }
+  text(rep(-0.1, n_colors), (1: n_colors) - 0.6, labels = titles, xpd = TRUE, adj = 1)
+}
+
+many_palette_plotter(c("PRGn", "YlGn", "Set2"), 7, 
+                     titles = c("Diverging", "Sequential", "Categorical"))
+```
+

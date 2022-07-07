@@ -1,0 +1,320 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 영화 리뷰 크롤링
+
+#패키지 로드
+```{r}
+# install.packages("XML")
+library(XML)
+library(stringr)
+library(tidyverse)
+library(tidytext)
+library(dplyr)
+Sys.setlocale("LC_ALL","Korean") # 언어 한글로
+```
+
+# 영화리뷰 가져오기
+```{r}
+all_reviews <- NULL
+url_base <- "https://movie.naver.com/movie/bi/mi/pointWriteFormList.nhn?code=38444&type=after&onlyActualPointYn=N&order=newest&page="
+
+all_reviews <- vector("list",250)
+```
+
+```{r}
+for (i in 1:250) { 
+  newr <- NULL
+  url <- paste(url_base, i, sep='')
+  txt <- readLines(url, encoding="UTF-8")
+  
+  # 영화 리뷰 부분만 가져오기
+  reviews <- txt[which(str_detect(txt, "id=\"_filtered_ment"))+4] 
+  # 특수문자 제거
+  reviews <- gsub("[[:punct:]]|\t|[a-zA-Z]|[0-9]","", reviews) 
+  
+  newr <- tibble(reviews)
+  # newr <- cbind(reviews)
+  # all_reviews <- rbind(all_reviews, newr)
+  all_reviews[[i]] <- newr
+}
+
+all_reviews <- all_reviews %>% bind_rows()
+```
+
+```{r}
+# 다른 방법
+all_reviews <- lapply(1:250, function(k) {
+  newr <- NULL
+  url <- paste(url_base, k, sep='')
+  txt <- readLines(url, encoding="UTF-8")
+  
+  # 영화 리뷰 부분만 가져오기
+  reviews <- txt[which(str_detect(txt, "id=\"_filtered_ment"))+4] 
+  # 특수문자 제거
+  reviews <- gsub("[[:punct:]]|\t|[a-zA-Z]|[0-9]","", reviews) 
+  
+  newr <- tibble(reviews)
+  
+  return(newr)
+})
+
+all_reviews <- all_reviews %>% bind_rows()
+
+```
+
+
+# 텍스트 데이터 전처리
+```{r}
+review_dat <- tibble(reply = all_reviews$reviews,
+                     n_char = nchar(all_reviews$reviews)) %>% # 각 리뷰에 글자수가 몇개인지
+  filter(n_char>1) %>% # 글자 수가 1개 이상인 것만 filtering
+  mutate(id=row_number()) %>% 
+  select(id,reply)
+```
+
+# 토큰화
+```{r}
+word_comment <- review_dat %>%
+  unnest_tokens(input = reply,
+                output = word,
+                token = "words",
+                drop = FALSE) %>% 
+  filter(nchar(word) > 1)
+```
+
+### 감성점수 부여
+# 군산대 감성사전 다운로드
+- https://github.com/park1200656/KnuSentiLex
+
+```{r}
+dic <- read_csv("data/knu_sentiment_lexicon.csv")
+```
+# 감성점수 계산
+```{r}
+word_comment <- word_comment %>%
+  left_join(dic, by = "word") %>%
+  mutate(polarity = ifelse(is.na(polarity), 0, polarity)) # polarity 가 NA면 0, 아니면 polarity값을 써줌
+
+# table(word_comment$polarity) #매칭이 거의 안됨
+```
+
+# 자주 사용된 감정단어 살펴보기
+```{r}
+# 1. 감정 분류하기
+word_comment <- word_comment %>%
+  mutate(sentiment = ifelse(polarity >= 1, "pos",
+                            ifelse(polarity <= -1, "neg", "neu")))
+word_comment %>%
+  count(sentiment)
+
+# 2. 막대 그래프 만들기
+top10_sentiment <- word_comment %>%
+  filter(sentiment != "neu") %>%
+  count(sentiment, word) %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 10)
+
+top10_sentiment
+
+
+# 막대 그래프 만들기
+ggplot(top10_sentiment, aes(x = reorder(word, n),
+                            y = n,
+                            fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  geom_text(aes(label = n), hjust = -0.3) +
+  facet_wrap(~ sentiment, scales = "free") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
+  labs(x = NULL) 
+```
+
+# Wordcloud로 시각화
+```{r}
+library(wordcloud2)
+
+word_vis <- word_comment %>% count(word)
+
+wordcloud2(data=word_vis,fontFamily = '나눔바른고딕',
+            minSize=5)
+```
+# 보정
+형태소 단위로 분리하지 않을 경우 많은 보정이 필요함
+
+```{r}
+word_comment_modify <- word_comment %>% 
+  mutate(pos = gsub("영화를", "영화", word)) %>% 
+  mutate(pos = gsub("사랑은", "사랑", word)) %>% 
+  mutate(pos = gsub("사랑을", "사랑", word)) %>% 
+  mutate(pos = gsub("눈물이", "눈물", word)) %>% 
+  mutate(pos = gsub("이해가", "이해", word)) %>% 
+  mutate(pos = gsub("최고의", "최고", word)) %>% 
+  mutate(pos = gsub("기억이", "기억", word)) %>% 
+  mutate(pos = gsub("기억은", "기억", word))
+```
+
+정규표현식을 사용해 단어를 수정해봅시다
+
+```{r}
+# 1. 영화라는 단어가 들어간 부분을 모두 제거
+word_comment_modify <- word_comment %>%filter(!grepl(pattern="영화", word))
+# 2. '기억'으로 시작하는 단어는 뒤에 조사를 제거
+word_comment_modify <- word_comment_modify %>%mutate(word=gsub("기억.+","기억",word))
+# 3. '사랑'으로 시작하는 단어는 뒤에 조사를 제거
+word_comment_modify <- word_comment_modify %>%mutate(word=gsub("사랑.+","사랑",word))
+# 4. '감정'으로 시작하는 단어는 뒤에 조사를 제거
+word_comment_modify <- word_comment_modify %>%mutate(word=gsub("감정.+","감정",word))
+# 5. '눈물'로 시작하는 단어는 뒤에 조사를 제거
+word_comment_modify <- word_comment_modify %>%mutate(word=gsub("눈물.+","눈물",word))
+# 불용어
+st_word <- tibble(word=c("너무","정말","진짜","대한","이런","있는","하고","그리고","내가","같다")) 
+# 불용어 추가
+word_comment_modify <- word_comment_modify %>%anti_join(st_word) # 불용어 추가 삭제
+
+# 다시 시각화
+word_vis <- word_comment_modify %>%
+  count(word)
+
+wordcloud2(
+  data = word_vis,
+  fontFamily = '나눔바른고딕',
+  size = 1,
+  minSize = 2
+)
+```
+
+
+워드크라우드로 시각화를 해보고, 1) 조사 교정 필요한 단어를 수정해보고 2) 불용어를 추가해서 제거해 봅시다
+
+# KoNLP 패키지를 통한 형태소 분리
+
+## 형태소 단위로 tokenization
+
+형태소 단위로 Tokenization
+```{r}
+library(KoNLP)
+
+review.token <- review_dat %>%
+  unnest_tokens(output=pos, input=reply, token=SimplePos09) %>% 
+  group_by(id) %>% # 사용자 별로 그룹 지어서
+  mutate(pos_order = 1:n()) # pos 결과물의 순서 보장을 위해 순서 값을 추가
+```
+
+명사만 가져오기
+```{r}
+n_done <- review.token %>%
+  filter(str_detect(pos, "/n")) %>% # 명사만 추출
+  mutate(pos_done  = str_remove(pos, "/.*$")) %>% # 형태소 정보 제거 #/부터 끝까지 제거
+  filter(nchar(pos_done) > 1)%>% 
+  ungroup()
+```
+
+동사/형용사 가져오기
+```{r}
+p_done <- review.token %>%
+  filter(str_detect(pos, "/p")) %>% 
+  mutate(pos_done =str_replace_all(pos,"/.*$", "다")) %>% #맨 마지막에 '다'붙이기
+  filter(nchar(pos_done) > 1) %>% 
+  ungroup()
+```
+
+합치기
+```{r}
+pos_done <- bind_rows(n_done, p_done) %>% 
+  arrange(pos_order) %>% 
+  select(id, pos_done) 
+
+pos_done
+```
+
+# 단어출현빈도
+```{r}
+# 전체 명사/동사/형용사
+pos_done %>%
+  count(pos_done, sort = TRUE) %>%
+  filter(n >100) %>%
+  mutate(pos_done = reorder(pos_done, n)) %>%
+  ggplot(aes(pos_done, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+```{r}
+# 명사만
+n_done %>% 
+  count(pos_done, sort = TRUE) %>%
+  filter(n >50) %>%
+  mutate(pos_done = reorder(pos_done, n)) %>%
+  ggplot(aes(pos_done, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+```{r}
+# 동사/형용사만
+p_done %>%
+  count(pos_done, sort = TRUE) %>%
+  filter(n >80) %>%
+  mutate(pos_done = reorder(pos_done, n)) %>%
+  ggplot(aes(pos_done, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+# 불용어 제거
+```{r}
+# 원하는 단어를 넣어서 제거 가능
+st_word <- tibble(word=c("영화",
+                         "보다",
+                         "하다",
+                         "있다",
+                         "되다",
+                         "없다",
+                         "같다",
+                         "싶다")) # 불용어 추가
+
+n_done <- n_done %>%
+  anti_join(st_word, by=c("pos_done"="word")) %>%   # 불용어 추가 삭제
+  filter(!grepl(pattern="\\d+", pos_done))          # //d+ = 숫자의 정규표현식
+```
+
+#wordcloud2로 시각화
+```{r}
+library(wordcloud2)
+
+n_done_count <- n_done %>% count(pos_done)
+
+wordcloud2(data=n_done_count,fontFamily = '나눔바른고딕')
+```
+
+#Wordcloud 꾸미기
+```{r}
+# font size 조절
+wordcloud2(data=n_done_count,
+           fontFamily = '나눔바른고딕',
+           size=0.5)
+```
+```{r}
+# Minimum font size 조절 
+wordcloud2(data=n_done_count, fontFamily = '나눔바른고딕', size=2, minSize=2)
+
+```
+
+```{r}
+# 글자 모양 
+wordcloud2(n_done_count, size = 0.5, shape = 'star', minSize=1)
+```
+```{r}
+#배경색 및 컬러 변경
+wordcloud2(n_done_count,
+           color = "random-light", 
+           backgroundColor = "grey",
+           fontFamily = '나눔바른고딕',
+           minSize=2)
+```
+

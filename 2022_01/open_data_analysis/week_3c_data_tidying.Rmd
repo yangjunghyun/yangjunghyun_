@@ -1,0 +1,210 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+### Prerequisites
+
+```{r}
+library(tidyverse)
+```
+
+###Tidy data
+
+```{r}
+table1
+table2
+table3
+
+# Spread acorss two tibbles
+table4a #cases
+table4b # population
+```
+
+1.각 variable은 각각의 column(열)을 가져야 한다.
+2.각 관측치는 각각의 row(행)을 가져야 한다.
+3.각 value 값을 각각의 cell을 가져야 한다.
+
+#table1만 tidy한 데이터이다.
+
+```{r}
+table1
+#compute rate per 10,000
+table1 %>%
+  mutate(rate = cases / population * 10000)
+
+#같은 작업을 table 2로 해보기
+table1
+table2
+#case 와 population을 뽑아줄 땐 pivot_wider()
+#table2 %>% pivot_wider() %>% mutate(rate = cases / population * 10000)
+
+#compute cases per year
+table1 %>% 
+  count(year, wt = cases) #wt - weight
+
+table1 %>% group_by(year) %>% summarise(n=sum(cases))
+
+# visualise changes over time
+# 년도에 따라 확진자 수를 보고 싶을 때
+table1
+
+ggplot(table1, aes(x=year,y=cases)) +
+  geom_line(aes(group=country), colour = "grey50")+
+  geom_point(aes(colour = country, shape = country))+
+  scale_x_continuous(breaks = c(1999,2000))
+
+```
+
+## Pivoting
+
+tidyr: pivot_longer() and pivot_wider().
+#새로운 row를 만들땐 pivot_longer(), 새로운 col을 만들땐 pivot_wider()
+Longer
+
+
+```{r tidy-pivor-longer-plot-lines, fig.width = 5, echo=FALSE}
+table4a
+# View(table4a)
+
+
+
+tidy4a <- table4a %>% 
+  pivot_longer(
+    cols = c('1999','2000'),#!country
+    names_to = "year",
+    values_to = "cases"
+  ) %>% 
+  mutate(year = parse_integer(year)) #int로 바꿔줌
+
+tidy4a
+# View(tidy4a)
+
+tidy4a %>% 
+  ggplot(aes(x=year, y = cases))+
+  geom_line(colour = "grey50") + 
+  geom_point(aes(colour = country, shape = country)) +
+  scale_x_continuous(breaks = c(1999,2000))
+
+table4b
+# View(table4b)
+
+tidy4b <- table4b %>% 
+  pivot_longer(
+    cols = c('1999','2000'),#!country
+    names_to = "year",
+    values_to = "population"
+  ) %>% 
+  mutate(year = parse_integer(year))
+
+tidy4b
+# View(tidy4b)
+# 옆으로 붙여주기
+#1
+tidy4a$population <- tidy4b$population
+#2
+left_join(tidy4a, tidy4b)
+
+# left_join 키 값을 입력해줌(country, year)
+tidy4a %>% left_join(tidy4b, by = c("country", "year"))
+tidy4a
+
+```
+
+
+### Wider()
+
+`pivot_wider()` is the opposite of `pivot_longer()`.
+
+# type 안에 있는 cases, population 변수들을 분리하여 새로운
+컬럼으로 만들고 그 컬럼 안에 count 변수를 넣는다.
+
+```{r}
+table2
+# View(tidy2)
+table2 %>% 
+  pivot_wider(names_from = type, #type의 변수를 col로
+              values_from = count) %>% # col의 변수들은 count의 변수로 채움
+  mutate(rate = cases / population)
+
+tidy2 <- table2 %>% 
+  pivot_wider(names_from = type,
+              values_from = count) %>% 
+  mutate(rate = cases / population) 
+
+tidy2
+
+tidy2 %>% ggplot(aes(x=year, y = rate))+
+  geom_line(aes(group = country), colour = "grey50")+
+  geom_point(aes(colour = country, shape = "country"))+
+  scale_x_continuous(breaks=c(1999,2000))
+
+```
+
+### Advanced Pivoting(Missing values)
+
+```{r}
+#remotes::install_github("dcl-docs/dcldata")
+library(dcldata)
+```
+
+```{r}
+example_migration
+```
+NA 값이 있을 때 `pivot_longer`의 동작
+
+```{r}
+example_migration %>% 
+  pivot_longer(cols = !dest,
+               names_to = "origin",
+               values_to = "migrants")
+```
+
+`values_drop_na` to exclude these rows.
+
+```{r}
+# 가로로 긴 데이터를 세로로 늘리는 것이기 때문에
+# pivot_longer() 를 사용
+example_migration %>% 
+  pivot_longer(cols = !dest,
+               names_to = "origin",
+               values_to = "migrants",
+               values_drop_na = TRUE
+               )
+
+# 혹은 파이프라인을 하나 더 붙여도 됨
+example_migration %>% 
+  pivot_longer(cols = !dest,
+               names_to = "origin",
+               values_to = "migrants") %>% 
+  drop_na(migrants)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

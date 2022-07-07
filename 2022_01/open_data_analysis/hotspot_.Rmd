@@ -1,0 +1,179 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(glue)
+library(XML)
+library(stringr)
+library(lubridate)
+library(dplyr)
+library(httr)
+library(jsonlite)
+```
+
+
+### 대전지역 전체 사고다발지역 도출
+
+## 대전 군/구 코드 도출
+
+-법정동 코드 조회를 위해 다음 API를 사용
+-https://juso.dev/docs/reg-code-api/
+
+```{r}
+library(sf)
+
+api_key <- "WzPY1XSX%2BX7rgalcrRKQHOGSMG%2FCCotytqLjdMrl3PvKXhXc00G5Y0Fv4wObva75VD%2Fe5wQ32Gnd%2B0JeIwmItg%3D%3D"
+api_url <- "http://apis.data.go.kr/B552061/frequentzoneLg/getRestFrequentzoneLg"
+
+
+res <- "https://grpc-proxy-server-mkvo6j4wsq-du.a.run.app/v1/regcodes?regcode_pattern=30*"
+
+json <- res %>% 
+  fromJSON()
+
+daejeon_region <- json$regcodes[-1,]
+
+daejeon_gugun <- str_sub(daejeon_region$code,start = 3,end = 5) %>% unique()
+
+get_acc_hotspots <- function(year = "2020", sido_code, gugun_code){
+  res <- GET(
+    url =api_url,
+    query = list(
+      serviceKey = api_key %>% I(),
+      searchYearCd = "2020",
+      siDo = sido_code,
+      guGun = gugun_code,
+      type = "json",
+      numOfRows = 10,
+      pageNo = 1
+    )
+  )
+  
+  json <- res %>% 
+    content(as = "text", encoding = "UTF-8") %>% 
+    fromJSON()
+  
+  acc_hotspots <- json$items$item
+  
+  return(acc_hotspots)
+}
+
+daejeon_acc_hotspots <- lapply(daejeon_gugun, get_acc_hotspots, year = "2020", sido_code = "30") %>% bind_rows()
+
+daejeon_acc_hotspots_sf<- st_as_sf(daejeon_acc_hotspots, 
+                                  coords=c("lo_crd","la_crd"), 
+                                  crs= 4236)
+```
+
+
+
+
+# 대전지역의 사고다발 지역을 시각화 해 봅시다
+
+```{r}
+library(tmap)
+
+tmap_mode("view")
+
+tm_shape(daejeon_acc_hotspots_sf %>% relocate(spot_nm))+
+  tm_bubbles(size = "occrrnc_cnt",
+             col = "caslt_cnt")
+```
+### 기타 - Point를 Polygon으로 변환하기
+
+```{r}
+library(geojsonsf)
+tmp2 <- geojson_sf(daejeon_acc_hotspots$geom_json)
+st_geometry(daejeon_acc_hotspots_sf) <- tmp2$geometry
+```
+
+### 교수님 코드
+
+```{r}
+api_key <- "WzPY1XSX%2BX7rgalcrRKQHOGSMG%2FCCotytqLjdMrl3PvKXhXc00G5Y0Fv4wObva75VD%2Fe5wQ32Gnd%2B0JeIwmItg%3D%3D"
+api_url <- "http://apis.data.go.kr/B552061/frequentzoneLg/getRestFrequentzoneLg"
+
+res <- GET(url = api_url,
+           query = list(
+             serviceKey = api_key %>% I(),
+             searchYearCd = "2020",
+             siDo = "30",
+             guGun = "200",
+             type = "json",
+             numOfRows = 10,
+             pageNo = 1
+           ))
+
+print(x = res)
+
+json <- res %>% 
+  content(as="text", encoding = "UTF-8") %>% 
+  fromJSON()
+
+acc_hotspots <- json$items$item
+
+
+## 대전 군/구 코드 도출
+res <- "https://grpc-proxy-server-mkvo6j4wsq-du.a.run.app/v1/regcodes?regcode_pattern=30*"
+
+json <- res %>% 
+  fromJSON()
+
+daejeon_region <- json$regcodes[-1,]
+
+daejeon_gugun <- str_sub(daejeon_region$code,start = 3,end = 5) %>% unique() #3번째부터 5번째까지 추출
+```
+
+
+### 대전 지역 전체 사고다발지역 도출
+
+```{r}
+get_acc_hotspots <- function(year = "2020", sido_code, gugun_code){
+  res <- GET(url = api_url,
+             query = list(
+               serviceKey = api_key %>% I(),
+               searchYearCd = "2020",
+               siDo = sido_code,
+               guGun = gugun_code,
+               type = "json",
+               numOfRows = 10,
+               pageNo = 1
+             ))
+  
+  json <- res %>% 
+    content(as = "text", encoding = "UTF-8") %>% 
+    fromJSON()
+  
+  acc_hotspots <- json$items$item
+  
+  return(acc_hotspots)
+}
+
+daejeon_acc_hotspots <- lapply(daejeon_gugun, get_acc_hotspots, year = "2020", sido_code = "30") %>% bind_rows()
+```
+
+# 대전지역의 사고다발 지역을 시각화 해 봅시다
+
+```{r}
+library(sf)
+library(tmap)
+
+daejeon_acc_hotspots_sf <- st_as_sf(daejeon_acc_hotspots, coords = c("lo_crd","la_crd"),crs = 4236)
+
+tmap_mode("view")
+
+#relocate : 변수를 맨앞으로 보여줌
+tm_shape(daejeon_acc_hotspots_sf %>% relocate(spot_nm))+
+  tm_bubbles(size = "occrrnc_cnt",
+             col = "caslt_cnt")
+```
+
+
+### 기타 - Point를 Polygon으로 변환하기
+
+```{r}
+library(geojsonsf)
+tmp2 <- geojson_sf(daejeon_acc_hotspots$geom_json)
+st_geometry(daejeon_acc_hotspots_sf) <- tmp2$geometry
+```

@@ -1,0 +1,192 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 정규표현식에 대한 부가설명
+
+^ : 이걸로 시작함 $ : 이걸로 끝남 . : 임의의 글자 하나 ? : 앞에 있는 문자가 없거나 하나 + : 앞에 있는 문자가 하나 이상 * : 앞에 있는 문자가 없거나 하나 이상
+
+`grep` (찾고자하는 패턴, 대상벡터)
+
+```{r}
+library(stringr)
+
+data<-c("apple","banana","banano")
+
+grep("banana", data) # 패턴과 일치하는 데이터가 있으면 해당 index를 출력
+```
+
+```{r}
+gsub("bana", "rep", data) # 패턴과 일치하는 부분의 데이터를 변경
+```
+
+“banana” 라는 단어가 들어가 있기만 하면 찾음
+
+```{r}
+data<-c("apple","banana","banano", "a banana")
+grep("banana", data)
+```
+
+^을 맨 앞에 같이 사용하면 그 뒤의 글자로 시작하는 데이터만 찾음
+
+```{r}
+grep("^banana", data)
+```
+
+$을 맨 뒤에 같이 사용하면 그 앞의 글자로 끝나는 데이터만 찾음
+
+```{r}
+data<-c("apple","banana","banano", "a banana", "a banana a")
+grep("banana", data)
+```
+
+```{r}
+grep("banana$", data)
+```
+
+```{r}
+gsub("banana$", "aa", data)
+```
+
+완전히 일치하는 단어만 찾기
+
+```{r}
+data<-c("apple","banana","banano", "a banana", "a banana a")
+grep("banana", data)
+```
+
+```{r}
+grep("^banana$", data)
+```
+
+. 은 정규표현식에서 무엇이든 한 개의 글자를 의미
+
+```{r}
+data <- c("apple", "banana", "pear")
+grep(".a.", data)
+```
+
+```{r}
+str_extract(data, pattern=".a.")
+```
+
+```{r}
+str_extract(data, pattern=".a.$")
+```
+
+```{r}
+str_extract(data, pattern="^.a.")
+```
+
+[]는 대괄호 안에 있는 글자 하나하나가 문자클래스로 가능한 경우입니다. 예를 들어 [02468]이라고 하면 0, 2, 4, 6, 8 중 하나의 글자면 같은 패턴으로 이해합니다.
+
+```{r}
+x <- c("123", "1357","999990","1133")
+grep("[02468]", x)
+```
+
+문자 클래스 내에서는 ^가 지정한 글자들을 제외하고라는 뜻입니다.
+
+```{r}
+x <- c("123", "1357","999990","0200","02468", "023", "999024")
+grep("[^02468]", x)
+```
+
+```{r}
+str_extract(x, pattern="[^02468]")
+```
+
+?는 글자 뒤에 붙어서 그 글자가 한개 있거나 없는 경우 모두를 표현할 때 사용합니다.
+
+```{r}
+x <- c("apple", "banana", "pear", "aple")
+grep("app?", x)
+```
+
+```{r}
+str_extract(x, pattern="app?")
+```
+
++는 글자 뒤에 붙어서 그 글자가 한개 이상 연속하는 모두를 표현할 때 사용합니다.
+
+```{r}
+x <- c("apple", "banana", "pear", "aple")
+grep("p+", x)
+```
+
+```{r}
+str_extract(x, pattern="p+")
+```
+
+```{r}
+grep("ap+", x)
+```
+
+```{r}
+str_extract(x, pattern="ap+")
+```
+
+*는 글자 뒤에 붙어서 그 글자가 없는 경우부터 여러 개 연속하는 모두를 표현할 때 사용합니다.
+
+```{r}
+x <- c("apple", "banana", "pear", "aple", "abble","appppppppple")
+grep("app*", x)
+```
+
+```{r}
+str_extract(string=x, pattern="app*")
+```
+
+```{r}
+str_extract(string=x, pattern="app+")
+```
+
+```{r}
+x <- c("apple", "banana", "pear", "aple", "abble","appppppppple", "aeepp
+")
+
+str_extract(string=x, pattern="ae+p+")
+```
+
+```{r}
+str_extract(string=x, pattern="ae*p+")
+```
+
+# Exercise
+
+```{r}
+x <- c("creed", "meed", "med", "mat", "creep", "acreed")
+```
+
+1. 위의 텍스트 중, 첫글자가 m으로 시작하는 단어만 추출하시오.
+
+```{r}
+x[grep(pattern = "^m",x)]
+```
+
+
+2. 위의 텍스트 중, e가 한번이라도 들어가는 텍스트를 모두 추출하시오.
+
+```{r}
+x[grep(pattern = "e",x)]
+```
+
+3. 위의 텍스트 중, e가 두번이상 연속으로 들어가는 텍스트를 추출하시오.
+
+```{r}
+x[grep(pattern = "ee",x)]
+```
+
+4. 위의 텍스트 중, “cr” 로 시작하는 단어를, 모두 추출하시오
+
+```{r}
+x[grep(pattern = "^cr",x )]
+```
+
+5. 위의 텍스트 중, 알파벳 e를 모두 o로 변환하시오
+
+```{r}
+gsub(pattern = "e","o",x)
+gsub("e","o",x)
+```
+
