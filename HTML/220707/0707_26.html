@@ -1,0 +1,346 @@
+<!DOCTYPE html><!---폼 요소를 그룹으로 묶는<fieldset>,<legend>태그-->
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Form</title>
+</head>
+<body>
+    <form action="">
+        <fieldset>
+            <legend>로그인</legend>
+            <label>아이디(6자 이상)<input type="text"/></label>
+            <label for="user_id">아이디(6자 이상)</label>
+            <input type="text" id="user_id"/>
+        </fieldset>
+        <fieldset>
+            <legend>비밀번호</legend>
+            <label>비밀번호<input type="password"/></label>
+            <label for="user_pw">비밀번호</label>
+            <input type="password" id="user_pw"/>
+        </fieldset>
+    </form>
+</body>
+</html>
+
+<!--2-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>text password</title>
+</head>
+<body>
+    <form>
+        <fieldset>
+            <label>아이디 : <input type="text" id = "user_id" size = "10"/></label>
+            <label>비밀번호 : <input type="password" id = "user_pw" size ="10"/></label>
+            <input type="submit" value="로그인"/>
+        </fieldset>
+    </form>
+</body>
+</html>
+
+<!--3-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Url Email Tel</title>
+</head>
+<body>
+    <form>
+        <fieldset>
+            <legend>배송 정보</legend>
+            <ul>
+                <li>
+                    <label for="user_name">이름</label>
+                    <input type="text" id ="user_name"/>
+                </li>
+                <li>
+                    <label for="addr">배송 주소</label>
+                    <input type="text" id="addr"/>
+                </li>
+                <li>
+                    <label for="mail">이메일 주소</label>
+                    <input type="email" id="mail"/>
+                </li>
+                <li>
+                    <label for="phone">연락처</label>
+                    <input type="tel" id="phone"/>
+                </li>
+            </ul>
+        </fieldset>
+    </form>
+</body>
+</html>
+
+<!--4-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>체크박스와 라디오버튼</title>
+</head>
+<body>
+    <form>
+        <fieldset>
+            <legend>상품 선택</legend>
+            <p><b>주문할 상품을 선택해 주세요.</b></p>
+            <label><input type="checkbox" value="s_3"/>선물용 3kg</label>
+            <label><input type="checkbox" value="s_5"/>선물용 5kg</label>
+            <label><input type="checkbox" value="f_3"/>가정용 3kg</label>
+            <label><input type="checkbox" value="f_5"/>가정용 5kg</label>
+            <p><b>포장 선택</b></p>
+            <label><input type="radio" name="gift" value="yes"/>선물 포장</label>
+            <label><input type="radio" name="gift" value="no"/>선물 포장 안 함</label>
+        <!--- radio버튼의 name은 동일하게 해줘야함.-->
+        </fieldset>
+    </form>
+</body>
+</html>
+
+<!--5-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <h1>회원 가입을 환영합니다.</h1>
+    <form>
+        <fieldset>
+            <legend>사용자 정보</legend>
+            <ul>
+                <li><label>아이디 <input type="text" id="user_id"/></label></li>
+                <li><label>이메일 <input type="email" id="user_email"/></label></li>
+                <li><label>비밀번호 <input type="password" id="user_pw"/></label></li>
+                <li><label>비밀번호 확인 <input type="password" id="user_pw2"/></label></li>
+            </ul>
+        </fieldset>
+        <fieldset>
+            <legend>이벤트와 새로운 소식</legend>
+            <label><input type="radio" name="mail" value="yes"/>메일 수신</label>
+            <label><input type="radio" name="mail" value="no"/>메일 수신 안 함</label>
+        </fieldset>
+        <input type="submit" value="가입하기"/>
+        <input type="reset" value="취소"/>
+    </form>
+</body>
+</html>
+
+<!--6-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Number</title>
+</head>
+<body>
+    <ul>
+        <li>
+            <label><input type="checkbox" value="s_3"/>선물용 3kg</label>
+            <input type="number" min="0" max="5"/>개 (최대 5개)
+        </li>
+        <li>
+            <label><input type="checkbox" value="s_5"/>선물용 5kg</label>
+            <input type="number" min="0" max="3" value="1"/>개 (최대 3개)
+        </li>
+    </ul>
+    <ul>
+        <li>
+            <label><input type="checkbox" value="f_3"/>가정용 3kg</label>
+            <input type="range" min="0" max="5"/>개 (최대5개)
+        </li>
+        <li>
+            <label><input type="checkbox" value="f_5"/>가정용 5kg</label>
+            <input type="range" min="0" max="3" value="1"/>개 (최대3개)
+        </li>
+    </ul>
+</body>
+</html>
+
+<!--7-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Date</title>
+</head>
+<body>
+    <h1>날짜 지정하기</h1>
+    <input ytpe="date"/>
+    <input type="month"/>
+    <input type="week"/>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Time</title>
+</head>
+<body>
+    <h1>시간 지정하기</h1>
+    <input type="time"/>
+    <input type="datetime-local"/>
+</body>
+</html>
+
+<!--8-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <fieldset>
+        <label>아이디 : <input type="text" id="user_id" size="10"/></label>
+        <label>비밀번호 : <input type="password" id="user_pw" size="10"/></label>
+        <input type="image" src="img/login.png" alt="로그인"/>
+    </fieldset>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Default Button</title>
+</head>
+<body>
+    <form>
+        <input type="button" value="공지 창 열기" onclick="window.open('0707_30.html')"/>
+    </form>
+</body>
+</html>
+
+<!--9-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>File</title>
+</head>
+<body>
+    <form>
+        <input type="file"/>
+    </form>
+</body>
+</html>
+
+<hr/>
+
+<!---히든 필드-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Hidden</title>
+</head>
+<body>
+    <form>
+        <input type="hidden" value="사이트를 통한 직접 로그인"/>
+        <label>아이디 : <input type="text" id="user_id" size="10"/></label>
+        <label>비밀번호 : <input type="password" id = "user_pw" size="10"/></label>
+        <input type="submit" value="로그인"/>
+    </form>
+</body>
+</html>
+
+<!--10-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <h1>회원 가입을 환영합니다.</h1>
+    <form>
+        <fieldset>
+            <legend>사용자 정보</legend>
+            <ul>
+                <li><label>아이디 <input type="text" id="user_id"/></label></li>
+                <li><label>이메일 <input type="email" id="user_email"/></label></li>
+                <li><label>비밀번호 <input type="password" id="user_pw"/></label></li>
+                <li><label>비밀번호 확인 <input type="password" id="user_pw2"/></label></li>
+                <li><label>메모<textarea id="memo" cols="40" rows="4"></textarea></label></li>
+            </ul>
+        </fieldset>
+        <fieldset>
+            <legend>이벤트와 새로운 소식</legend>
+            <label><input type="radio" name="mail" value="yes"/>메일 수신</label>
+            <label><input type="radio" name="mail" value="no"/>메일 수신 안 함</label>
+        </fieldset>
+        <input type="submit" value="가입하기"/>
+        <input type="reset" value="취소"/>
+    </form>
+</body>
+</html>
+
+<!--11-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>레드향 주문하기</title>
+    <style>
+        hr {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <h1>여러 데이터 나열하기</h1>
+    <form action="">
+        <label for="prod1">상품 선택</label>
+        <select id="prod1" size="4" multiple>
+            <option value="special_3" selected>선물용 3kg</option>
+            <option value="special_5" >선물용 5kg</option>
+            <option value="family_3">가정용 3kg</option>
+            <option value="family_5">가정용 5kg</option>
+        </select>
+        <hr>
+        <label for="prod2">포장 여부</label>
+        <input type="text" id="prod2" list="pack">
+        <datalist id="pack">
+            <option value="package">선물 포장</option>
+            <option value="no_package">포장 안 함</option>
+        </datalist>
+    </form>
+</body>
+</html>
+
+<!--12-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 정보</title>
+</head>
+<body>
+    <div id="id">
+        <form>
+            <fieldset>
+                <h1>예약 정보</h1>
+                <ul>
+                    <label for="user-name">이름</label>
+                    <input type="text" id="user-name">
+                </ul>
+                <ul>
+                    <label for="user-name">전화</label>
+                    <input type="tel" id="user-phone">
+                </ul>
+                <ul>
+                    <label for="user-name">이메일</label>
+                    <input type="email" id="user-email">
+                </ul>
+                <input type="submit" value="예약하기"/>
+            </fieldset>
+        </form>
+    </div>
+</body>
+</html>
