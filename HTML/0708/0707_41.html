@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <fieldset>
+            <h1>프런트엔드 개발자 지원서</h1>
+            <p>HTML, CSS, 자바스크립트의 기술을 이해하고 실무 경험이 있는 분을 찾<br/>습니다.</p>
+            <hr/>
+            <h3>개인 정보</h3>
+            <p>&emsp;&emsp;<label for="user-name">이름</label>
+            <input type="text" id="user-name" placeholder="공백 없이 입력하세요"/></p>
+            <p>&emsp;&emsp;<label for="user-phone">연락처</label>
+            <input type="tel" id="user-phone"/></p>
+            <h3>지원 분야</h3>
+            <label>&emsp;&emsp;<input type="radio" name="web" value="web"/>웹 퍼블리싱</label><br/>
+            <label>&emsp;&emsp;<input type="radio" name="web" value="web"/>웹 애플리케이션 개발</label><br/>
+            <label>&emsp;&emsp;<input type="radio" name="web" value="web"/>개발 환경 개선</label>
+            <h3>지원 동기</h3>
+            <label><textarea id="memo" cols="60" rows="5"placeholder="본사 지원 동기를 간략히 써 주세요."></textarea></label><br/>
+            <input type="submit" value="접수하기"/>
+            <input type="reset" value="다시 쓰기"/>
+        </fieldset>
+    </form>
+</body>
+</html>
+
+
+<!--강사님 코드-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>프런트엔드 개발자 지원서</title>
+</head>
+<body>
+    <h1>프런트엔드 개발자 지원서</h1>
+    <p>HTML, CSS, 자바스크립트의 기술을 이해하고 실무 경험이 있는 분을 찾습니다.<br/></p>
+    <hr/>
+    <form>
+        <h4>개인 정보</h4>
+        <label for="user_name">이름</label>
+        <input type="text" id="user_name" placeholder="공백 없이 입력하세요."/><br/>
+        <label for="user_tel">연락처</label>
+        <input type="tel" id="user_tel" placeholder="010-1234-5678"/>
+        <h4>지원 분야</h4>
+        <label><input type="radio" name="field" value="wp"/>웹 퍼블리싱</label><br/>
+        <label><input type="radio" name="field" value="wp"/>웹 애플리케이션 개발</label><br/>
+        <label><input type="radio" name="field" value="wp"/>개발 환경 개선</label><br/>
+        <h4>지원 동기</h4>
+        <textarea id="motive" cols="60" rows="5" placeholder="본사 지원 동기를 간략히 써 주세요."></textarea><br/>
+        <input type="submit" value="접수하기"/>
+        <input type="reset" value="다시 쓰기"/>
+    </form>
+</body>
+</html>
