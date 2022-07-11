@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마무리문제2</title>
+    <style>
+        body {
+            padding-top: 20px;
+            text-align:center;
+            font-family: "굴림";
+        }
+        h3 {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>3의 배수 찾기</h1>
+    <script>
+        var userNumber = prompt("몇 까지 3의 배수를 찾을까요?");
+        var count = 0;
+
+        if(userNumber !==null){
+
+        } else {
+            alert("취소");
+        }
+
+        for (i=1;i<=userNumber;i++){
+            if(i % 3 === 0){
+                document.write(i +",");
+                count++;
+            }
+        }
+    document.write("<h3>"+userNumber + "까지 3의 배수의 개수 : ",count+"</h3>");    
+    </script>
+</body>
+</html>
