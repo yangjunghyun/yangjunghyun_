@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자바스크립트 이벤트</title>
+    <link rel="stylesheet" href="css/function.css"/>
+</head>
+<body>
+    <ul>
+        <li><a href="#" onclick="changeColor('green')">Green</a></li>
+        <li><a href="#" onclick="changeColor('orange')">Orange</a></li>
+        <li><a href="#" onclick="changeColor('purple')">Purple</a></li>
+    </ul>
+    <div id="result"></div>
+
+    <script>
+        function changeColor(color) {
+            var result = document.querySelector('#result');
+            result.style.backgroudColor = color;
+        }
+    </script>
+</body>
+</html>
