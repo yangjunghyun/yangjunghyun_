@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마우스</title>
+</head>
+<body>
+        <button onclick="btnclick();">버튼</button>
+        <button onmouseup="btnclick();">버튼</button>
+        <input type="text" onchange="btnclick()"/>
+        <select onchange="btnclick()">
+            <option value="1">선택</option>
+            <option value="2">선택2</option>
+            <option value="3">선택3</option>
+        </select>
+        <script>
+        function btnclick() {
+            alert("버튼클릭");
+        }
+    </script>
+</body>
+</html>
