@@ -5,7 +5,7 @@ fastpages : https://yangjunghyun.github.io/yangjunghyun_/
 
 jekyll blog : https://yangjunghyun.github.io/
 
-notion : https://www.notion.so/YangJungHyun-879c909c295243bb9c40635b38dcfe98?pvs=4
+notion : https://zrr.kr/roa2
 
 # About me
 
