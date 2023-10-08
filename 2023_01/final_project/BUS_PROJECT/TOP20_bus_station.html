@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>pydeck</title>
+        <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <script src='https://cdn.jsdelivr.net/npm/@deck.gl/jupyter-widget@~8.8.*/dist/index.js'></script>
+    <style>
+    body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#deck-container {
+  width: 100vw;
+  height: 100vh;
+}
+
+#deck-container canvas {
+  z-index: 1;
+  background: none;
+}
+    </style>
+  </head>
+  <body>
+    <div id="deck-container">
+    </div>
+  </body>
+  <script>
+    const container = document.getElementById('deck-container');
+    const jsonInput = {
+  "initialViewState": {
+    "latitude": 36.35,
+    "longitude": 127.37,
+    "zoom": 11
+  },
+  "layers": [
+    {
+      "@@type": "ScatterplotLayer",
+      "data": [
+        {
+          "GETON_BUS_STTN_ID": 8001587,
+          "GETON_BUS_STTN_NM": "\ub86f\ub370\ubc31\ud654\uc810",
+          "GETON_POSX": 36.340076,
+          "GETON_POSY": 127.39074
+        },
+        {
+          "GETON_BUS_STTN_ID": 8001078,
+          "GETON_BUS_STTN_NM": "\uac24\ub7ec\ub9ac\uc544\ud0c0\uc784\uc6d4\ub4dc",
+          "GETON_POSX": 36.352608,
+          "GETON_POSY": 127.37894
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002721,
+          "GETON_BUS_STTN_NM": "\ucda9\ub0a8\ub300\ud559\uad50",
+          "GETON_POSX": 36.36156,
+          "GETON_POSY": 127.34411
+        },
+        {
+          "GETON_BUS_STTN_ID": 8001096,
+          "GETON_BUS_STTN_NM": "\ubcf5\ud569\ud130\ubbf8\ub110",
+          "GETON_POSX": 36.349014,
+          "GETON_POSY": 127.43566
+        },
+        {
+          "GETON_BUS_STTN_ID": 8006006,
+          "GETON_BUS_STTN_NM": "\uc740\ud558\uc218\ub124\uac70\ub9ac",
+          "GETON_POSX": 36.35089,
+          "GETON_POSY": 127.37786
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002757,
+          "GETON_BUS_STTN_NM": "\ud070\ub9c8\uc744\uc544\ud30c\ud2b8",
+          "GETON_POSX": 36.347553,
+          "GETON_POSY": 127.37715
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002814,
+          "GETON_BUS_STTN_NM": "\ud30c\ub791\uc0c8\ub124\uac70\ub9ac",
+          "GETON_POSX": 36.35306,
+          "GETON_POSY": 127.379524
+        },
+        {
+          "GETON_BUS_STTN_ID": 8001922,
+          "GETON_BUS_STTN_NM": "\uc11c\uad6c\ubcf4\uac74\uc18c",
+          "GETON_POSX": 36.36827,
+          "GETON_POSY": 127.37935
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002969,
+          "GETON_BUS_STTN_NM": "\uc2dc\uccad\uc5ed",
+          "GETON_POSX": 36.3514,
+          "GETON_POSY": 127.38817
+        },
+        {
+          "GETON_BUS_STTN_ID": 8001085,
+          "GETON_BUS_STTN_NM": "\ud55c\ub0a8\ub85c\uc0bc\uac70\ub9ac",
+          "GETON_POSX": 36.351215,
+          "GETON_POSY": 127.42663
+        },
+        {
+          "GETON_BUS_STTN_ID": 8001400,
+          "GETON_BUS_STTN_NM": "\ub300\uc804\ubcf4\uac74\ub300\ud559",
+          "GETON_POSX": 36.34835,
+          "GETON_POSY": 127.45088
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002831,
+          "GETON_BUS_STTN_NM": "\ubc30\uc7ac\ub300\ud559\uad50",
+          "GETON_POSX": 36.322803,
+          "GETON_POSY": 127.37046
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002920,
+          "GETON_BUS_STTN_NM": "\ud55c\ubc2d\ub300\ud559\uad50",
+          "GETON_POSX": 36.350742,
+          "GETON_POSY": 127.29754
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002437,
+          "GETON_BUS_STTN_NM": "\uc73c\ub2a5\uc815\uc774\uac70\ub9ac",
+          "GETON_POSX": 36.3291,
+          "GETON_POSY": 127.427444
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002635,
+          "GETON_BUS_STTN_NM": "\uc911\uc559\uc2dc\uc7a5",
+          "GETON_POSX": 36.329105,
+          "GETON_POSY": 127.43359
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002340,
+          "GETON_BUS_STTN_NM": "\uc6b0\uc1a1\ub300\uc0bc\uac70\ub9ac",
+          "GETON_POSX": 36.336014,
+          "GETON_POSY": 127.44718
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002453,
+          "GETON_BUS_STTN_NM": "\uc740\ud558\uc218\ub124\uac70\ub9ac",
+          "GETON_POSX": 36.3506,
+          "GETON_POSY": 127.37813
+        },
+        {
+          "GETON_BUS_STTN_ID": 8002088,
+          "GETON_BUS_STTN_NM": "\uc2dc\uccad\uc5ed",
+          "GETON_POSX": 36.35114,
+          "GETON_POSY": 127.38867
+        },
+        {
+          "GETON_BUS_STTN_ID": 8001418,
+          "GETON_BUS_STTN_NM": "\ub300\uc804\uc5ed",
+          "GETON_POSX": 36.33254,
+          "GETON_POSY": 127.43213
+        },
+        {
+          "GETON_BUS_STTN_ID": 8001097,
+          "GETON_BUS_STTN_NM": "\ubcf5\ud569\ud130\ubbf8\ub110",
+          "GETON_POSX": 36.34904,
+          "GETON_POSY": 127.43719
+        }
+      ],
+      "getColor": [
+        255,
+        0,
+        0,
+        150
+      ],
+      "getPosition": "@@=[GETON_POSY, GETON_POSX]",
+      "getRadius": 80,
+      "id": "0d2b9e45-fb9c-4882-ad83-be8c9e103194",
+      "pickable": true
+    },
+    {
+      "@@type": "ScatterplotLayer",
+      "data": [
+        {
+          "GETOFF_BUS_STTN_ID": 8001028,
+          "GETOFF_BUS_STTN_NM": "\uac00\uc218\uc6d0\uc721\uad50.\uac00\uc218\uc6d0\uc2dc\uc7a5",
+          "GETOFF_POSX": 36.30469,
+          "GETOFF_POSY": 127.350845
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001934,
+          "GETOFF_BUS_STTN_NM": "\uc11c\ub300\uc804\uc5ed\ub124\uac70\ub9ac",
+          "GETOFF_POSX": 36.320564,
+          "GETOFF_POSY": 127.406425
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001420,
+          "GETOFF_BUS_STTN_NM": "\ub300\uc804\uc5ed",
+          "GETOFF_POSX": 36.333435,
+          "GETOFF_POSY": 127.43141
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8002454,
+          "GETOFF_BUS_STTN_NM": "\uc73c\ub2a5\uc815\uc774\uac70\ub9ac",
+          "GETOFF_POSX": 36.329296,
+          "GETOFF_POSY": 127.42716
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001348,
+          "GETOFF_BUS_STTN_NM": "\ub300\ub3d9\uc5ed3\ubc88\ucd9c\uad6c",
+          "GETOFF_POSX": 36.32906,
+          "GETOFF_POSY": 127.441734
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001419,
+          "GETOFF_BUS_STTN_NM": "\ub300\uc804\uc5ed",
+          "GETOFF_POSX": 36.332737,
+          "GETOFF_POSY": 127.431725
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8002453,
+          "GETOFF_BUS_STTN_NM": "\uc740\ud558\uc218\ub124\uac70\ub9ac",
+          "GETOFF_POSX": 36.3506,
+          "GETOFF_POSY": 127.37813
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8002814,
+          "GETOFF_BUS_STTN_NM": "\ud30c\ub791\uc0c8\ub124\uac70\ub9ac",
+          "GETOFF_POSX": 36.35306,
+          "GETOFF_POSY": 127.379524
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001078,
+          "GETOFF_BUS_STTN_NM": "\uac24\ub7ec\ub9ac\uc544\ud0c0\uc784\uc6d4\ub4dc",
+          "GETOFF_POSX": 36.352608,
+          "GETOFF_POSY": 127.37894
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8002468,
+          "GETOFF_BUS_STTN_NM": "\uc774\ub9c8\ud2b8",
+          "GETOFF_POSX": 36.35534,
+          "GETOFF_POSY": 127.379196
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8002412,
+          "GETOFF_BUS_STTN_NM": "\uc720\uc131\uc628\ucc9c\uc5ed7\ubc88\ucd9c\uad6c",
+          "GETOFF_POSX": 36.354378,
+          "GETOFF_POSY": 127.342026
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001418,
+          "GETOFF_BUS_STTN_NM": "\ub300\uc804\uc5ed",
+          "GETOFF_POSX": 36.33254,
+          "GETOFF_POSY": 127.43213
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8002721,
+          "GETOFF_BUS_STTN_NM": "\ucda9\ub0a8\ub300\ud559\uad50",
+          "GETOFF_POSX": 36.36156,
+          "GETOFF_POSY": 127.34411
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8002969,
+          "GETOFF_BUS_STTN_NM": "\uc2dc\uccad\uc5ed",
+          "GETOFF_POSX": 36.3514,
+          "GETOFF_POSY": 127.38817
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001096,
+          "GETOFF_BUS_STTN_NM": "\ubcf5\ud569\ud130\ubbf8\ub110",
+          "GETOFF_POSX": 36.349014,
+          "GETOFF_POSY": 127.43566
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001097,
+          "GETOFF_BUS_STTN_NM": "\ubcf5\ud569\ud130\ubbf8\ub110",
+          "GETOFF_POSX": 36.34904,
+          "GETOFF_POSY": 127.43719
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001553,
+          "GETOFF_BUS_STTN_NM": "\ub3d9\ucd98\ub2f9",
+          "GETOFF_POSX": 36.36514,
+          "GETOFF_POSY": 127.440155
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8002279,
+          "GETOFF_BUS_STTN_NM": "\uc6a9\ubb38\uc5ed5\ubc88\ucd9c\uad6c",
+          "GETOFF_POSX": 36.33916,
+          "GETOFF_POSY": 127.39248
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8001412,
+          "GETOFF_BUS_STTN_NM": "\ub300\uc804\uc5ed/\uc5ed\uc804\uc2dc\uc7a5",
+          "GETOFF_POSX": 36.329525,
+          "GETOFF_POSY": 127.43368
+        },
+        {
+          "GETOFF_BUS_STTN_ID": 8002904,
+          "GETOFF_BUS_STTN_NM": "\ud55c\ub0a8\ub300\ud559\uad50",
+          "GETOFF_POSX": 36.351395,
+          "GETOFF_POSY": 127.42235
+        }
+      ],
+      "getColor": [
+        0,
+        0,
+        255,
+        150
+      ],
+      "getPosition": "@@=[GETOFF_POSY, GETOFF_POSX]",
+      "getRadius": 80,
+      "id": "b1efde8c-a2f8-430b-b91a-5725bd864bcc",
+      "pickable": true
+    }
+  ],
+  "mapProvider": "carto",
+  "mapStyle": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+  "views": [
+    {
+      "@@type": "MapView",
+      "controller": true
+    }
+  ]
+};
+    const tooltip = true;
+    const customLibraries = null;
+    const configuration = null;
+
+    const deckInstance = createDeck({
+                  container,
+      jsonInput,
+      tooltip,
+      customLibraries,
+      configuration
+    });
+
+  </script>
+</html>
